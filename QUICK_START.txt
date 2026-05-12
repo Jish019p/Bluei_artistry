@@ -1,0 +1,166 @@
+┌─────────────────────────────────────────────────────────────┐
+│  🦉 BLUIE ARTISTRY - QUICK REFERENCE CARD                   │
+└─────────────────────────────────────────────────────────────┘
+
+📋 YOUR IMAGES → WHERE THEY GO:
+
+┌──────────────────────┬─────────────────┬──────────────────┐
+│ Your Image           │ File Name       │ Used In          │
+├──────────────────────┼─────────────────┼──────────────────┤
+│ Portrait Sketch      │ sketching.jpg   │ Collections #1   │
+│ Owl Mascot (⭐)      │ owl-mascot.jpg  │ Hero + About +   │
+│                      │                 │ Custom Orders    │
+│ Thread Art           │ thread-art.jpg  │ Collections #3   │
+│ (Moon & Star)        │                 │                  │
+│ Flower Quilling (⭐)│ paper-quilling  │ Collections #2   │
+│                      │ .jpg            │                  │
+│ OM Ganesha           │ paper-crafts.   │ Collections #4   │
+│                      │ jpg             │                  │
+│ Newspaper Flower     │ ribbon-bouquets │ Collections #5   │
+│ (⭐)                 │ .jpg            │                  │
+│ [Your Clay Art]      │ mud-clay.jpg    │ Collections #6   │
+│ [Your Painting]      │ painting.jpg    │ Collections #7   │
+└──────────────────────┴─────────────────┴──────────────────┘
+
+(⭐) = You've provided these images
+
+📁 FOLDER: public/images/
+
+
+⚡ QUICK COMMANDS:
+
+```bash
+# Start development
+npm run dev
+# → Visit http://localhost:5173
+
+# When ready to deploy
+npm run build
+# → Creates dist/ folder for uploading
+```
+
+
+✅ THE 3-STEP PROCESS:
+
+1️⃣  ADD IMAGES
+    Copy 8 images to: public/images/
+    (Use exact filenames from table above)
+
+2️⃣  TEST
+    npm run dev
+    Check http://localhost:5173
+    See all images load correctly
+
+3️⃣  DEPLOY
+    npm run build
+    Upload dist/ to your hosting
+    (See DEPLOYMENT_GUIDE.md)
+
+
+📊 WEBSITE STRUCTURE:
+
+✓ Navigation bar + Instagram link
+✓ Hero section with owl image
+✓ About section with bio + services
+✓ Collections grid (7 artwork categories)
+✓ Custom orders WhatsApp CTA  
+✓ Professional footer
+
+
+🎨 CUSTOMIZATION:
+
+• Change colors → Edit src/App.css (lines 5-12)
+• Change text → Edit src/App.tsx
+• Update Instagram → Update URL in navbar
+• Update WhatsApp → Change phone number in links
+
+
+🌐 DEPLOYMENT OPTIONS:
+
+Easiest:    Vercel (npm i -g vercel; vercel)
+Easiest+:   Netlify (npm i -g netlify-cli; netlify deploy --prod --dir=dist)
+Enterprise: Azure Static Web Apps (DEPLOYMENT_GUIDE.md)
+Manual:     Any hosting (upload dist/ folder)
+
+
+🖼️ IMAGE SPECS:
+
+Format:   JPG (best), PNG, or WebP
+Max Size: 500KB per image
+Square:   300x300px (collections)
+Portrait: 400x450px (owl mascot)
+Tool:     TinyPNG.com or Squoosh.app (compress first)
+
+
+📍 FILES YOU NEED TO KNOW:
+
+README.md              ← Project overview
+DEPLOYMENT_GUIDE.md    ← How to deploy (detailed)
+IMAGE_GUIDE.md         ← Image placement guide
+IMAGE_MAPPING.md       ← This mapping + step-by-step
+IMPLEMENTATION_SUMMARY.txt ← What's been done
+
+
+⚠️ COMMON MISTAKES:
+
+❌ Wrong filename capitalization
+   ✅ owl-mascot.jpg (correct)
+   ❌ Owl-Mascot.JPG (wrong!)
+
+❌ Images in wrong folder
+   ✅ public/images/ (correct)
+   ❌ src/images/ (wrong!)
+
+❌ Large image files
+   ✅ Use TinyPNG to compress
+   ❌ Don't upload uncompressed
+
+
+🚀 YOU'RE READY WHEN:
+
+□ All 8 images in public/images/
+□ Filenames match exactly
+□ npm run dev shows all images
+□ No errors in browser console (F12)
+□ Mobile view looks good
+□ Tested multiple browsers
+
+
+💡 NEXT STEPS:
+
+RIGHT NOW:
+1. Gather your images
+2. Compress with TinyPNG
+3. Rename with exact filenames
+4. Copy to public/images/
+5. npm run dev to test
+
+WHEN READY:
+1. npm run build
+2. Choose hosting platform
+3. Deploy dist/ folder
+4. Share your website! 🎉
+
+
+📞 NEED HELP?
+
+Images not showing?     → See IMAGE_GUIDE.md
+How to deploy?          → See DEPLOYMENT_GUIDE.md
+How to customize?       → See README.md
+Browser support?        → Chrome, Firefox, Safari, Edge
+
+
+🎯 REMEMBER:
+
+✅ Website is 100% ready
+✅ Code tested and working
+✅ Just add your images
+✅ Deploy when ready
+✅ All documentation provided
+
+
+═══════════════════════════════════════════════════════════════
+
+👉 START HERE: Copy images → npm run dev → npm run build → Deploy!
+
+═══════════════════════════════════════════════════════════════
