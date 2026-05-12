@@ -26,6 +26,19 @@ export default function App() {
   }>>(initializeUploadedItems);
   const [enlargedImage, setEnlargedImage] = useState<string | null>(null);
   const [enlargedImageName, setEnlargedImageName] = useState<string>('');
+  const [showCustomOrderModal, setShowCustomOrderModal] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    artworkType: '',
+    description: '',
+    quantity: '1',
+    budget: '',
+    timeline: '',
+    additionalNotes: ''
+  });
+  const [formSubmitted, setFormSubmitted] = useState(false);
 
   // Save data to localStorage whenever uploadedItems changes
   useEffect(() => {
@@ -97,6 +110,59 @@ export default function App() {
     setEnlargedImageName('');
   };
 
+  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Format the message for WhatsApp
+    const message = `*Custom Order Request from Bluie Artistry*
+
+*Customer Details:*
+Name: ${formData.name}
+Email: ${formData.email}
+Phone: ${formData.phone}
+
+*Order Details:*
+Artwork Type: ${formData.artworkType}
+Description: ${formData.description}
+Quantity: ${formData.quantity}
+Budget: ${formData.budget}
+Timeline: ${formData.timeline}
+
+*Additional Notes:*
+${formData.additionalNotes || 'None'}`;
+
+    // Encode the message for URL
+    const encodedMessage = encodeURIComponent(message);
+    
+    // Open WhatsApp with the message
+    window.open(`https://wa.me/919131804780?text=${encodedMessage}`, '_blank');
+    
+    // Reset form
+    setFormData({
+      name: '',
+      email: '',
+      phone: '',
+      artworkType: '',
+      description: '',
+      quantity: '1',
+      budget: '',
+      timeline: '',
+      additionalNotes: ''
+    });
+    
+    // Show success message
+    setFormSubmitted(true);
+    setTimeout(() => setFormSubmitted(false), 3000);
+  };
+
   const collectionUploadedItems = selectedCollection !== null 
     ? uploadedItems.filter(item => item.collectionIndex === selectedCollection)
     : [];
@@ -154,7 +220,6 @@ export default function App() {
             <li><a href="#home" className={activeNav === 'home' ? 'active' : ''} onClick={() => setActiveNav('home')}>Home</a></li>
             <li><a href="#about" className={activeNav === 'about' ? 'active' : ''} onClick={() => setActiveNav('about')}>About</a></li>
             <li><a href="#collections" className={activeNav === 'collections' ? 'active' : ''} onClick={() => setActiveNav('collections')}>Collections ▾</a></li>
-            <li><a href="#gallery" className={activeNav === 'gallery' ? 'active' : ''} onClick={() => setActiveNav('gallery')}>Gallery</a></li>
             <li><a href="#custom" className={activeNav === 'custom' ? 'active' : ''} onClick={() => setActiveNav('custom')}>Custom Orders</a></li>
             <li><a href="#contact" className={activeNav === 'contact' ? 'active' : ''} onClick={() => setActiveNav('contact')}>Contact</a></li>
           </ul>
@@ -178,13 +243,7 @@ export default function App() {
             From delicate paper quilling to thoughtful handmade gifts, each piece is crafted with passion and creativity.
           </p>
           <div className="hero-buttons">
-            <button className="btn-primary">Explore Collection →</button>
-            <button className="btn-secondary">Custom Orders ♡</button>
-          </div>
-          <div className="hero-carousel-dots">
-            <div className="carousel-dot active"></div>
-            <div className="carousel-dot"></div>
-            <div className="carousel-dot"></div>
+            <a href="#custom" className="btn-secondary" onClick={() => setActiveNav('custom')}>Custom Orders ♡</a>
           </div>
         </div>
 
@@ -306,12 +365,12 @@ export default function App() {
           </div>
         </div>
 
-        <a href="https://wa.me/919131804780?text=Hi%20Bluie%20Artistry!%20I'm%20interested%20in%20your%20custom%20handmade%20creations." target="_blank" rel="noopener noreferrer" className="whatsapp-btn">
+        <button className="whatsapp-btn" onClick={() => setShowCustomOrderModal(true)}>
           <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
             <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
           </svg>
-          Order on WhatsApp
-        </a>
+          Create Custom Order
+        </button>
       </section>
 
       {/* Footer */}
@@ -352,7 +411,7 @@ export default function App() {
             <ul>
               <li><a href="#home">Home</a></li>
               <li><a href="#about">About</a></li>
-              <li><a href="#gallery">Gallery</a></li>
+              <li><a href="#custom">Custom Orders</a></li>
               <li><a href="#contact">Contact</a></li>
             </ul>
           </div>
@@ -475,6 +534,172 @@ export default function App() {
                 <a href="https://wa.me/919131804780?text=Hi%20Bluie%20Artistry!%20I'm%20interested%20in%20your%20custom%20handmade%20creations." target="_blank" rel="noopener noreferrer" className="modal-cta">Order Now ♡</a>
               </div>
             </div>
+          </div>
+        </>
+      )}
+
+      {/* Custom Order Modal */}
+      {showCustomOrderModal && (
+        <>
+          <div className="modal-backdrop" onClick={() => setShowCustomOrderModal(false)}></div>
+          <div className="custom-order-modal">
+            <button className="modal-close" onClick={() => setShowCustomOrderModal(false)}>✕</button>
+            
+            <div className="custom-order-modal-header">
+              <h2>Create Your Custom Order ✿</h2>
+              <p>Tell us about your vision and we'll bring it to life!</p>
+            </div>
+
+            {formSubmitted && (
+              <div className="form-success-message">
+                ✓ Your order details have been sent to WhatsApp! We'll respond soon.
+              </div>
+            )}
+
+            <form className="custom-order-form" onSubmit={handleFormSubmit}>
+              <div className="form-row">
+                <div className="form-group">
+                  <label htmlFor="name">Your Name *</label>
+                  <input 
+                    type="text" 
+                    id="name" 
+                    name="name"
+                    value={formData.name}
+                    onChange={handleFormChange}
+                    placeholder="Enter your name"
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="email">Email *</label>
+                  <input 
+                    type="email" 
+                    id="email" 
+                    name="email"
+                    value={formData.email}
+                    onChange={handleFormChange}
+                    placeholder="Enter your email"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="form-row">
+                <div className="form-group">
+                  <label htmlFor="phone">Phone Number *</label>
+                  <input 
+                    type="tel" 
+                    id="phone" 
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleFormChange}
+                    placeholder="Enter your phone number"
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="artworkType">Artwork Type *</label>
+                  <select 
+                    id="artworkType" 
+                    name="artworkType"
+                    value={formData.artworkType}
+                    onChange={handleFormChange}
+                    required
+                  >
+                    <option value="">Select an option</option>
+                    <option value="Sketching">Sketching</option>
+                    <option value="Paper Quilling">Paper Quilling</option>
+                    <option value="Thread Art">Thread Art</option>
+                    <option value="Paper Craft">Paper Craft</option>
+                    <option value="Ribbon Bouquets">Ribbon Bouquets</option>
+                    <option value="Mud & Clay Art">Mud & Clay Art</option>
+                    <option value="Painting">Painting</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="form-group full-width">
+                <label htmlFor="description">Project Description *</label>
+                <textarea 
+                  id="description" 
+                  name="description"
+                  value={formData.description}
+                  onChange={handleFormChange}
+                  placeholder="Describe what you'd like us to create. Include details like size, colors, theme, etc."
+                  rows={4}
+                  required
+                />
+              </div>
+
+              <div className="form-row">
+                <div className="form-group">
+                  <label htmlFor="quantity">Quantity *</label>
+                  <input 
+                    type="number" 
+                    id="quantity" 
+                    name="quantity"
+                    value={formData.quantity}
+                    onChange={handleFormChange}
+                    min="1"
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="budget">Budget (Optional)</label>
+                  <input 
+                    type="text" 
+                    id="budget" 
+                    name="budget"
+                    value={formData.budget}
+                    onChange={handleFormChange}
+                    placeholder="e.g., ₹500-1000"
+                  />
+                </div>
+              </div>
+
+              <div className="form-row">
+                <div className="form-group">
+                  <label htmlFor="timeline">Timeline *</label>
+                  <select 
+                    id="timeline" 
+                    name="timeline"
+                    value={formData.timeline}
+                    onChange={handleFormChange}
+                    required
+                  >
+                    <option value="">Select timeline</option>
+                    <option value="ASAP">ASAP</option>
+                    <option value="1-2 weeks">1-2 weeks</option>
+                    <option value="2-4 weeks">2-4 weeks</option>
+                    <option value="1-2 months">1-2 months</option>
+                    <option value="Flexible">Flexible</option>
+                  </select>
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="additionalNotes">Additional Notes (Optional)</label>
+                  <textarea 
+                    id="additionalNotes" 
+                    name="additionalNotes"
+                    value={formData.additionalNotes}
+                    onChange={handleFormChange}
+                    placeholder="Any other details?"
+                    rows={3}
+                  />
+                </div>
+              </div>
+
+              <button type="submit" className="submit-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style={{ marginRight: '8px' }}>
+                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
+                </svg>
+                Send on WhatsApp
+              </button>
+            </form>
           </div>
         </>
       )}
