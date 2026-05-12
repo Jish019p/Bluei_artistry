@@ -1,9 +1,36 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './App.css';
+
+// Lazy initialization function to load from localStorage
+const initializeUploadedItems = () => {
+  const savedItems = localStorage.getItem('bluieArtistryUploads');
+  if (savedItems) {
+    try {
+      return JSON.parse(savedItems);
+    } catch (error) {
+      console.error('Error loading saved uploads:', error);
+      return [];
+    }
+  }
+  return [];
+};
 
 export default function App() {
   const [activeNav, setActiveNav] = useState('home');
   const [selectedCollection, setSelectedCollection] = useState<number | null>(null);
+  const [uploadedItems, setUploadedItems] = useState<Array<{
+    collectionIndex: number;
+    name: string;
+    imageUrl: string;
+    date: string;
+  }>>(initializeUploadedItems);
+  const [enlargedImage, setEnlargedImage] = useState<string | null>(null);
+  const [enlargedImageName, setEnlargedImageName] = useState<string>('');
+
+  // Save data to localStorage whenever uploadedItems changes
+  useEffect(() => {
+    localStorage.setItem('bluieArtistryUploads', JSON.stringify(uploadedItems));
+  }, [uploadedItems]);
 
   const collections = [
     { name: 'Sketching', subtitle: 'Portraits & more', image: '/images/sketching.jpg' },
@@ -24,6 +51,55 @@ export default function App() {
     { name: 'Mud & Clay Art', icon: '🏺' },
     { name: 'Painting (in Progress)', icon: '🖌️', inProgress: true }
   ];
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, collectionIndex: number) => {
+    const files = e.target.files;
+    if (files) {
+      Array.from(files).forEach((file) => {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          if (event.target?.result) {
+            const newItem = {
+              collectionIndex,
+              name: file.name.replace(/\.[^/.]+$/, ''),
+              imageUrl: event.target.result as string,
+              date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+            };
+            setUploadedItems((prevItems) => [...prevItems, newItem]);
+          }
+        };
+        reader.readAsDataURL(file);
+      });
+      // Clear input
+      e.target.value = '';
+    }
+  };
+
+  const handleDeleteItem = (index: number) => {
+    setUploadedItems((prevItems) => 
+      prevItems.filter((_, i) => i !== index)
+    );
+  };
+
+  const handleClearAllUploads = (collectionIndex: number) => {
+    setUploadedItems((prevItems) =>
+      prevItems.filter((item) => item.collectionIndex !== collectionIndex)
+    );
+  };
+
+  const handleImageClick = (imageUrl: string, imageName: string) => {
+    setEnlargedImage(imageUrl);
+    setEnlargedImageName(imageName);
+  };
+
+  const handleCloseEnlargedImage = () => {
+    setEnlargedImage(null);
+    setEnlargedImageName('');
+  };
+
+  const collectionUploadedItems = selectedCollection !== null 
+    ? uploadedItems.filter(item => item.collectionIndex === selectedCollection)
+    : [];
 
   return (
     <div className="app">
@@ -116,7 +192,7 @@ export default function App() {
           <img className="hero-owl" src="/images/owl-mascot.png" alt="Bluie mascot" />
 
           <div className="meet-blue">
-            <h3>Meet Blue!</h3>
+            <h3>Meet Bluie</h3>
             <p>Our little mascot<br />made with paper<br />quilling ♡</p>
           </div>
         </div>
@@ -149,7 +225,7 @@ export default function App() {
           <p className="about-description">
             I'm an artist who loves experimenting with different crafting styles, from paper quilling to handmade creations. Every piece you see here is handmade with patience, love and attention to detail. Thank you for supporting handmade!
           </p>
-          <a href="https://wa.me/919131804780" target="_blank" rel="noopener noreferrer" className="follow-link">Chat on WhatsApp ♡</a>
+          <a href="https://wa.me/919131804780" target="_blank" rel="noopener noreferrer" className="follow-link" >Chat on WhatsApp ♡</a>
 
           <div className="services-list">
             {services.map((service, index) => (
@@ -285,8 +361,8 @@ export default function App() {
             <h4>Connect with me</h4>
             <div className="social-links">
               <a href="https://instagram.com/bluie_artistry" target="_blank" rel="noopener noreferrer" className="social-link">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="#5b4b8a">
-                  <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069z" />
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
                 </svg>
                 @bluie_artistry
               </a>
@@ -305,6 +381,18 @@ export default function App() {
         </div>
       </footer>
 
+      {/* Enlarged Image Preview */}
+      {enlargedImage && (
+        <>
+          <div className="image-preview-backdrop" onClick={handleCloseEnlargedImage}></div>
+          <div className="image-preview-modal">
+            <button className="preview-close" onClick={handleCloseEnlargedImage}>✕</button>
+            <img src={enlargedImage} alt={enlargedImageName} className="preview-image" />
+            <p className="preview-name">{enlargedImageName}</p>
+          </div>
+        </>
+      )}
+
       {/* Collection Modal */}
       {selectedCollection !== null && (
         <>
@@ -312,12 +400,79 @@ export default function App() {
           <div className="collection-modal">
             <button className="modal-close" onClick={() => setSelectedCollection(null)}>✕</button>
             <div className="modal-content">
-              <img src={collections[selectedCollection].image} alt={collections[selectedCollection].name} className="modal-image" />
+              <div className="modal-left">
+                <img src={collections[selectedCollection].image} alt={collections[selectedCollection].name} className="modal-image" />
+                
+                <div className="upload-section">
+                  <label className="upload-label">
+                    <input 
+                      type="file" 
+                      multiple 
+                      accept="image/*"
+                      onChange={(e) => handleFileUpload(e, selectedCollection)}
+                      className="upload-input"
+                    />
+                    <span className="upload-button">+ Upload Artwork</span>
+                  </label>
+                </div>
+
+                {collectionUploadedItems.length > 0 && (
+                  <div className="uploaded-gallery">
+                    <div className="gallery-header">
+                      <h3 className="gallery-title">My {collections[selectedCollection].name}</h3>
+                      <button 
+                        className="clear-all-btn"
+                        onClick={() => handleClearAllUploads(selectedCollection)}
+                        title="Delete all uploads for this collection"
+                      >
+                        Clear All
+                      </button>
+                    </div>
+                    <div className="gallery-grid">
+                      {collectionUploadedItems.map((item, index) => (
+                        <div key={index} className="gallery-item">
+                          <div className="gallery-item-wrapper">
+                            <img 
+                              src={item.imageUrl} 
+                              alt={item.name} 
+                              className="gallery-image"
+                              onClick={() => handleImageClick(item.imageUrl, item.name)}
+                              style={{ cursor: 'pointer' }}
+                            />
+                            <button 
+                              className="delete-item-btn"
+                              onClick={() => handleDeleteItem(uploadedItems.findIndex(
+                                i => i.collectionIndex === item.collectionIndex && 
+                                    i.imageUrl === item.imageUrl && 
+                                    i.date === item.date
+                              ))}
+                              title="Delete this item"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                          <div className="gallery-info">
+                            <p className="gallery-name">{item.name}</p>
+                            <p className="gallery-date">{item.date}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
               <div className="modal-info">
                 <h2>{collections[selectedCollection].name}</h2>
                 {collections[selectedCollection].subtitle && <p className="modal-subtitle">{collections[selectedCollection].subtitle}</p>}
                 <p className="modal-description">Discover the artistry and craftsmanship behind this beautiful collection.</p>
-                <a href="https://wa.me/919131804780?text=Hi%20Bluie%20Artistry!%20I'm%20interested%20in%20the%20__collection_item__%20collection." target="_blank" rel="noopener noreferrer" className="modal-cta">Order Now ♡</a>
+                <div className="modal-stats">
+                  <div className="stat">
+                    <span className="stat-label">Total Uploads:</span>
+                    <span className="stat-value">{collectionUploadedItems.length}</span>
+                  </div>
+                </div>
+                <a href="https://wa.me/919131804780?text=Hi%20Bluie%20Artistry!%20I'm%20interested%20in%20your%20custom%20handmade%20creations." target="_blank" rel="noopener noreferrer" className="modal-cta">Order Now ♡</a>
               </div>
             </div>
           </div>
